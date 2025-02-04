@@ -12,19 +12,14 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, apiKey } = await req.json()
+    const { messages } = await req.json()
+    const apiKey = Deno.env.get('ANTHROPIC_API_KEY')
 
     if (!apiKey) {
       throw new Error('API key is required')
     }
 
-    // Convert messages to Anthropic format
-    const anthropicMessages = messages.map((msg: any) => ({
-      role: msg.role === 'user' ? 'user' : 'assistant',
-      content: msg.content
-    }))
-
-    console.log('Sending request to Anthropic:', { messages: anthropicMessages })
+    console.log('Sending request to Anthropic:', { messages })
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -35,7 +30,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'claude-3-sonnet-20240229',
-        messages: anthropicMessages,
+        messages: messages,
         max_tokens: 1024,
       }),
     })
