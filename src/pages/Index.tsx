@@ -35,42 +35,35 @@ const Index = () => {
       
       setMessages(newMessages);
 
-      const { data: stream, error } = await supabase.functions.invoke('chat', {
+      const response = await supabase.functions.invoke('chat', {
         body: { messages: newMessages }
       });
 
-      if (error) throw error;
+      if (response.error) throw response.error;
 
       let assistantMessage = { role: 'assistant', content: '' } as Message;
       setMessages([...newMessages, assistantMessage]);
 
-      const reader = stream.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
+      // Processar a resposta como texto
+      const reader = new TextDecoder();
+      const chunks = response.data.split('\n');
+      
+      for (const chunk of chunks) {
+        if (chunk.startsWith('data: ')) {
+          const data = chunk.slice(6);
+          if (data === '[DONE]') continue;
+          
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed.choices[0]?.delta?.content || '';
+            assistantMessage.content += content;
             
-            try {
-              const parsed = JSON.parse(data);
-              const content = parsed.choices[0]?.delta?.content || '';
-              assistantMessage.content += content;
-              
-              setMessages(prev => [
-                ...prev.slice(0, -1),
-                { ...assistantMessage }
-              ]);
-            } catch (e) {
-              console.error('Error parsing chunk:', e);
-            }
+            setMessages(prev => [
+              ...prev.slice(0, -1),
+              { ...assistantMessage }
+            ]);
+          } catch (e) {
+            console.error('Error parsing chunk:', e);
           }
         }
       }

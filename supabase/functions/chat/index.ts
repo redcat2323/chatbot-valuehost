@@ -29,6 +29,7 @@ serve(async (req) => {
       }),
     });
 
+    // Retorna o stream diretamente
     return new Response(response.body, {
       headers: {
         ...corsHeaders,
