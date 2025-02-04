@@ -89,7 +89,7 @@ const Index = () => {
                 <ChatInput onSend={handleSendMessage} isLoading={isLoading} />
               </div>
               <div className="text-xs text-center text-gray-500 py-2">
-                Claude pode cometer erros. Verifique informações importantes.
+                O GPT pode cometer erros. Verifique informações importantes.
               </div>
             </>
           )}

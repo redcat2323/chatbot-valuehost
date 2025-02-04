@@ -19,13 +19,7 @@ serve(async (req) => {
       throw new Error('API key is required');
     }
 
-    // Format messages for OpenAI API
-    const formattedMessages = messages.map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
-
-    console.log('Sending request to OpenAI:', { formattedMessages });
+    console.log('Sending request to OpenAI:', { messages });
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -35,7 +29,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        messages: formattedMessages,
+        messages: messages,
         max_tokens: 1024,
       }),
     });
