@@ -35,22 +35,32 @@ const Index = () => {
       
       setMessages(newMessages);
 
-      const response = await supabase.functions.invoke('chat', {
+      const { data, error } = await supabase.functions.invoke('chat', {
         body: { messages: newMessages }
       });
 
-      if (response.error) throw response.error;
+      if (error) throw error;
 
       let assistantMessage = { role: 'assistant', content: '' } as Message;
       setMessages([...newMessages, assistantMessage]);
 
-      // Processar a resposta como texto
-      const reader = new TextDecoder();
-      const chunks = response.data.split('\n');
-      
-      for (const chunk of chunks) {
-        if (chunk.startsWith('data: ')) {
-          const data = chunk.slice(6);
+      // Create a TextDecoder to decode the streaming response
+      const decoder = new TextDecoder();
+
+      // Convert the base64 string to a Uint8Array
+      const binaryString = atob(data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      // Process the response as text
+      const text = decoder.decode(bytes);
+      const lines = text.split('\n');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
           if (data === '[DONE]') continue;
           
           try {
