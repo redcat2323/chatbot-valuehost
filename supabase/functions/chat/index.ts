@@ -29,7 +29,7 @@ serve(async (req) => {
       }),
     });
 
-    // Transform the response into a readable stream
+    // Return the stream directly with proper headers
     return new Response(response.body, {
       headers: {
         ...corsHeaders,
