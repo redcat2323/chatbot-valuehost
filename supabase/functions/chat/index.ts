@@ -13,37 +13,36 @@ serve(async (req) => {
 
   try {
     const { messages } = await req.json()
-    const apiKey = Deno.env.get('ANTHROPIC_API_KEY')
+    const apiKey = Deno.env.get('OPENAI_API_KEY')
 
     if (!apiKey) {
       throw new Error('API key is required')
     }
 
-    console.log('Sending request to Anthropic:', { messages })
+    console.log('Sending request to OpenAI:', { messages })
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-3-sonnet-20240229',
+        model: 'gpt-4o-mini',
         messages: messages,
         max_tokens: 1024,
       }),
     })
 
     const data = await response.json()
-    console.log('Received response from Anthropic:', data)
+    console.log('Received response from OpenAI:', data)
 
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Error calling Anthropic API')
+      throw new Error(data.error?.message || 'Error calling OpenAI API')
     }
 
     // Extract just the text content from the response
-    const content = data.content[0].text
+    const content = data.choices[0].message.content
 
     return new Response(
       JSON.stringify({ content }),
