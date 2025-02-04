@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import Sidebar from '@/components/Sidebar';
 import ChatHeader from '@/components/ChatHeader';
 import ChatInput from '@/components/ChatInput';
-import ActionButtons from '@/components/ActionButtons';
 import MessageList from '@/components/MessageList';
 
 type Message = {
@@ -13,7 +11,6 @@ type Message = {
 };
 
 const Index = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -64,23 +61,16 @@ const Index = () => {
 
   return (
     <div className="flex h-screen">
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-        onApiKeyChange={() => {}} // Empty function since we're using Supabase secrets now
-      />
-      
-      <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
-        <ChatHeader isSidebarOpen={isSidebarOpen} />
+      <main className="flex-1">
+        <ChatHeader />
         
         <div className={`flex h-full flex-col ${messages.length === 0 ? 'items-center justify-center' : 'justify-between'} pt-[60px] pb-4`}>
           {messages.length === 0 ? (
-            <div className="w-full max-w-3xl px-4 space-y-4">
+            <div className="w-full max-w-3xl px-4">
               <div>
                 <h1 className="mb-8 text-4xl font-semibold text-center">Como posso ajudar?</h1>
                 <ChatInput onSend={handleSendMessage} isLoading={isLoading} />
               </div>
-              <ActionButtons />
             </div>
           ) : (
             <>
