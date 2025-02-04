@@ -14,6 +14,7 @@ const MessageActions = ({ content }: MessageActionsProps) => {
       toast({
         description: "Mensagem copiada para a área de transferência",
         duration: 2000,
+        className: "bg-[#9b87f5] text-white border-none",
       });
     } catch (err) {
       toast({
