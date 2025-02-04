@@ -74,7 +74,7 @@ const Index = () => {
             </div>
           ) : (
             <>
-              <MessageList messages={messages} />
+              <MessageList messages={messages} isLoading={isLoading} />
               <div className="w-full max-w-3xl mx-auto px-4 py-2">
                 <ChatInput onSend={handleSendMessage} isLoading={isLoading} />
               </div>

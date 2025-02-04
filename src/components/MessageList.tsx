@@ -5,12 +5,21 @@ type Message = {
   content: string;
 };
 
-const MessageList = ({ messages }: { messages: Message[] }) => {
+type MessageListProps = {
+  messages: Message[];
+  isLoading?: boolean;
+};
+
+const MessageList = ({ messages, isLoading = false }: MessageListProps) => {
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="w-full max-w-3xl mx-auto px-4">
         {messages.map((message, index) => (
-          <Message key={index} {...message} />
+          <Message 
+            key={index} 
+            {...message} 
+            isLoading={isLoading && index === messages.length - 1} 
+          />
         ))}
       </div>
     </div>
