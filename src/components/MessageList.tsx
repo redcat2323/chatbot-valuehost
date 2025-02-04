@@ -21,6 +21,13 @@ const MessageList = ({ messages, isLoading = false }: MessageListProps) => {
             isLoading={isLoading && index === messages.length - 1} 
           />
         ))}
+        {isLoading && messages[messages.length - 1]?.role === 'user' && (
+          <Message
+            role="assistant"
+            content=""
+            isLoading={true}
+          />
+        )}
       </div>
     </div>
   );
