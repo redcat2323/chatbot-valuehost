@@ -8,7 +8,10 @@ type MessageAvatarProps = {
 
 const MessageAvatar = ({ isAssistant, isThinking = false }: MessageAvatarProps) => {
   return (
-    <div className={`relative ${isAssistant && isThinking ? 'after:absolute after:inset-0 after:rounded-full after:border-4 after:border-green-500/50 after:animate-[ping_1s_ease-in-out_infinite]' : ''}`}>
+    <div className="relative w-8 h-8">
+      {isAssistant && isThinking && (
+        <span className="absolute inset-0 rounded-full animate-ping bg-green-500/50" />
+      )}
       <Avatar className={`h-8 w-8 ${isAssistant && isThinking ? 'animate-pulse' : ''}`}>
         <AvatarFallback 
           className={`
