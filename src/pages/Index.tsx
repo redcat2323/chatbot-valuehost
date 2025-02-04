@@ -35,39 +35,18 @@ const Index = () => {
       
       setMessages(newMessages);
 
-      const { data: response, error } = await supabase.functions.invoke('chat', {
+      const { data, error } = await supabase.functions.invoke('chat', {
         body: { messages: newMessages }
       });
 
       if (error) throw error;
 
-      let assistantMessage = { role: 'assistant', content: '' } as Message;
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data.content
+      };
+
       setMessages([...newMessages, assistantMessage]);
-
-      // Process the response as text directly
-      const text = new TextDecoder().decode(response);
-      const lines = text.split('\n');
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6);
-          if (data === '[DONE]') continue;
-          
-          try {
-            const parsed = JSON.parse(data);
-            const content = parsed.choices[0]?.delta?.content || '';
-            assistantMessage.content += content;
-            
-            setMessages(prev => [
-              ...prev.slice(0, -1),
-              { ...assistantMessage }
-            ]);
-          } catch (e) {
-            console.error('Error parsing chunk:', e);
-          }
-        }
-      }
-
     } catch (error: any) {
       console.error('Error in chat:', error);
       toast({
