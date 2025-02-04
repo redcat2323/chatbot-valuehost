@@ -50,7 +50,7 @@ const Message = ({ role, content, isLoading = false }: MessageProps) => {
               formatContent(content)
             )}
           </div>
-          {role === 'assistant' && <MessageActions />}
+          {role === 'assistant' && <MessageActions content={content} />}
         </div>
       </div>
     </div>
