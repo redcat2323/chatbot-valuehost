@@ -65,7 +65,29 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            color: '#fff',
+            a: {
+              color: '#3b82f6',
+              '&:hover': {
+                color: '#60a5fa',
+              },
+            },
+            strong: {
+              color: '#fff',
+            },
+            code: {
+              color: '#fff',
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require('@tailwindcss/typography'),
+  ],
 } satisfies Config;
