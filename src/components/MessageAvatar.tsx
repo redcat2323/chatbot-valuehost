@@ -8,20 +8,22 @@ type MessageAvatarProps = {
 
 const MessageAvatar = ({ isAssistant, isThinking = false }: MessageAvatarProps) => {
   return (
-    <Avatar className={`h-8 w-8 ${isThinking ? 'animate-pulse' : ''}`}>
-      <AvatarFallback 
-        className={`
-          ${isAssistant ? 'bg-green-600' : 'bg-slate-600'}
-          ${isThinking ? 'animate-pulse' : ''}
-        `}
-      >
-        {isAssistant ? (
-          <Bot className="h-5 w-5 text-white" />
-        ) : (
-          <User className="h-5 w-5 text-white" />
-        )}
-      </AvatarFallback>
-    </Avatar>
+    <div className={`relative ${isThinking ? 'after:absolute after:inset-0 after:rounded-full after:border-4 after:border-green-500/50 after:animate-[ping_1s_ease-in-out_infinite]' : ''}`}>
+      <Avatar className={`h-8 w-8 ${isThinking ? 'animate-pulse' : ''}`}>
+        <AvatarFallback 
+          className={`
+            ${isAssistant ? 'bg-green-600' : 'bg-slate-600'}
+            ${isThinking ? 'animate-pulse' : ''}
+          `}
+        >
+          {isAssistant ? (
+            <Bot className={`h-5 w-5 text-white ${isThinking ? 'animate-bounce' : ''}`} />
+          ) : (
+            <User className="h-5 w-5 text-white" />
+          )}
+        </AvatarFallback>
+      </Avatar>
+    </div>
   );
 };
 
