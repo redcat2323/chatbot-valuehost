@@ -1,4 +1,3 @@
-
 import MessageAvatar from './MessageAvatar';
 import MessageActions from './MessageActions';
 
@@ -16,7 +15,7 @@ const Message = ({ role, content, isLoading = false }: MessageProps) => {
       .replace(/---/g, '\n') // Converte --- em quebras de linha
       .split('\n')
       .map((paragraph, index) => (
-        <p key={index} className="mb-2">
+        <p key={index} className="mb-4 last:mb-0 whitespace-pre-wrap break-words">
           {paragraph.trim()}
         </p>
       ));
@@ -30,8 +29,8 @@ const Message = ({ role, content, isLoading = false }: MessageProps) => {
           <div 
             className={`
               ${role === 'user' 
-                ? 'bg-[#343541] text-white rounded-2xl px-6 pb-3 pt-4 inline-block max-w-[80%] shadow-md' 
-                : 'text-left leading-relaxed'
+                ? 'bg-[#343541] text-white rounded-2xl px-6 pb-3 pt-4 inline-block max-w-[80%] shadow-md overflow-hidden' 
+                : 'text-left leading-relaxed max-w-[80%]'
               }
             `}
           >
@@ -48,7 +47,9 @@ const Message = ({ role, content, isLoading = false }: MessageProps) => {
                 </div>
               </div>
             ) : (
-              formatContent(content)
+              <div className="prose prose-invert max-w-none">
+                {formatContent(content)}
+              </div>
             )}
           </div>
           {role === 'assistant' && <MessageActions content={content} />}
