@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       custom_instructions: {
         Row: {
+          app_id: string
           content: string
           created_at: string
           id: string
@@ -19,6 +20,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          app_id?: string
           content: string
           created_at?: string
           id?: string
@@ -27,6 +29,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          app_id?: string
           content?: string
           created_at?: string
           id?: string

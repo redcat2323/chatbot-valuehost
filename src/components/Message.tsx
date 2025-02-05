@@ -31,7 +31,6 @@ const Message = ({ role, content, isLoading = false }: MessageProps) => {
                 ? 'bg-[#343541] text-white rounded-2xl px-6 pb-3 pt-3 inline-block max-w-[80%] shadow-md' 
                 : 'text-left leading-relaxed max-w-[80%]'
               }
-              max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent
             `}
           >
             {isLoading && role === 'assistant' ? (
