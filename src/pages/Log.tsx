@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -21,32 +22,34 @@ interface ChartData {
 }
 
 const Log = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAdminRole = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data, error } = await supabase.rpc('has_role', {
-          _user_id: user.id,
-          _role: 'admin'
-        });
-        
-        if (error) {
-          toast({
-            title: "Erro",
-            description: "Erro ao verificar permissões",
-            variant: "destructive",
-          });
-        } else {
-          setIsAdmin(data);
-        }
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setIsAuthenticated(true);
       }
     };
 
-    checkAdminRole();
-  }, [toast]);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setIsAuthenticated(true);
+      }
+    });
+
+    checkAuth();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ["logStats"],
@@ -92,7 +95,7 @@ const Log = () => {
         averageQueriesPerUser,
       };
     },
-    enabled: isAdmin,
+    enabled: isAuthenticated,
   });
 
   const { data: chartData, isLoading: isLoadingChart } = useQuery({
@@ -116,17 +119,11 @@ const Log = () => {
         count,
       }));
     },
-    enabled: isAdmin,
+    enabled: isAuthenticated,
   });
 
-  if (!isAdmin) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-lg text-muted-foreground">
-          Você não tem permissão para acessar esta página.
-        </p>
-      </div>
-    );
+  if (!isAuthenticated) {
+    return null;
   }
 
   return (
