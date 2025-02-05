@@ -1,3 +1,4 @@
+
 import MessageAvatar from './MessageAvatar';
 import MessageActions from './MessageActions';
 
@@ -29,7 +30,7 @@ const Message = ({ role, content, isLoading = false }: MessageProps) => {
           <div 
             className={`
               ${role === 'user' 
-                ? 'bg-gray-700/50 rounded-[20px] px-4 py-2 inline-block' 
+                ? 'bg-[#343541] text-white rounded-2xl px-5 py-3 inline-block max-w-[85%] shadow-sm'
                 : 'text-left leading-relaxed'
               }
             `}
