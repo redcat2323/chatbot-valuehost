@@ -8,11 +8,10 @@ type MessageProps = {
 };
 
 const Message = ({ role, content, isLoading = false }: MessageProps) => {
-  // Função para formatar o texto removendo asteriscos e melhorando a apresentação
   const formatContent = (text: string) => {
     return text
-      .replace(/\*\*/g, '') // Remove asteriscos duplos
-      .replace(/---/g, '\n') // Converte --- em quebras de linha
+      .replace(/\*\*/g, '')
+      .replace(/---/g, '\n')
       .split('\n')
       .map((paragraph, index) => (
         <p key={index} className="mb-4 last:mb-0 whitespace-pre-wrap break-words">
@@ -29,9 +28,10 @@ const Message = ({ role, content, isLoading = false }: MessageProps) => {
           <div 
             className={`
               ${role === 'user' 
-                ? 'bg-[#343541] text-white rounded-2xl px-6 pb-3 pt-4 inline-block max-w-[80%] shadow-md overflow-hidden' 
+                ? 'bg-[#343541] text-white rounded-2xl px-6 pb-3 pt-4 inline-block max-w-[80%] shadow-md' 
                 : 'text-left leading-relaxed max-w-[80%]'
               }
+              max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent
             `}
           >
             {isLoading && role === 'assistant' ? (
