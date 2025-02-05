@@ -42,31 +42,6 @@ export default function Auth() {
     setLoading(false);
   }
 
-  async function handleSignUp(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      toast({
-        title: "Erro ao criar conta",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Conta criada com sucesso",
-        description: "Verifique seu email para confirmar sua conta.",
-      });
-    }
-
-    setLoading(false);
-  }
-
   return (
     <div className="flex h-screen items-center justify-center">
       <Card className="w-[400px]">
@@ -103,19 +78,9 @@ export default function Auth() {
                 required
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Button type="submit" disabled={loading}>
-                {loading ? "Entrando..." : "Entrar"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                disabled={loading}
-                onClick={handleSignUp}
-              >
-                Criar conta
-              </Button>
-            </div>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
+            </Button>
           </form>
         </CardContent>
       </Card>
