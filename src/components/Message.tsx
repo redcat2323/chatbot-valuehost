@@ -30,7 +30,7 @@ const Message = ({ role, content, isLoading = false }: MessageProps) => {
           <div 
             className={`
               ${role === 'user' 
-                ? 'bg-[#343541] text-white rounded-2xl px-6 py-4 inline-block max-w-[80%] shadow-md' 
+                ? 'bg-[#343541] text-white rounded-2xl px-6 pb-3 pt-4 inline-block max-w-[80%] shadow-md' 
                 : 'text-left leading-relaxed'
               }
             `}
