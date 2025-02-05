@@ -24,7 +24,6 @@ const Log = () => {
   const { toast } = useToast();
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Verificar se o usuário é admin
   useEffect(() => {
     const checkAdminRole = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -57,19 +56,19 @@ const Log = () => {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const startOfYear = new Date(2025, 0, 1);
 
-      const { data: weeklyCount, error: weeklyError } = await supabase
+      const { count: weeklyCount, error: weeklyError } = await supabase
         .from('usage_logs')
-        .select('id', { count: 'exact' })
+        .select('id', { count: 'exact', head: true })
         .gte('created_at', startOfWeek.toISOString());
 
-      const { data: monthlyCount, error: monthlyError } = await supabase
+      const { count: monthlyCount, error: monthlyError } = await supabase
         .from('usage_logs')
-        .select('id', { count: 'exact' })
+        .select('id', { count: 'exact', head: true })
         .gte('created_at', startOfMonth.toISOString());
 
-      const { data: yearlyCount, error: yearlyError } = await supabase
+      const { count: yearlyCount, error: yearlyError } = await supabase
         .from('usage_logs')
-        .select('id', { count: 'exact' })
+        .select('id', { count: 'exact', head: true })
         .gte('created_at', startOfYear.toISOString());
 
       const { data: users, error: usersError } = await supabase
@@ -83,12 +82,12 @@ const Log = () => {
 
       const uniqueUsers = new Set(users?.map(log => log.user_id));
       const totalUsers = uniqueUsers.size;
-      const averageQueriesPerUser = totalUsers > 0 ? Math.round((yearlyCount?.count || 0) / totalUsers) : 0;
+      const averageQueriesPerUser = totalUsers > 0 ? Math.round((yearlyCount || 0) / totalUsers) : 0;
 
       return {
-        weeklyCount: weeklyCount?.count || 0,
-        monthlyCount: monthlyCount?.count || 0,
-        yearlyCount: yearlyCount?.count || 0,
+        weeklyCount: weeklyCount || 0,
+        monthlyCount: monthlyCount || 0,
+        yearlyCount: yearlyCount || 0,
         totalUsers,
         averageQueriesPerUser,
       };
