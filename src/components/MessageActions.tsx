@@ -1,4 +1,5 @@
-import { Copy, RotateCcw, MoreHorizontal } from "lucide-react";
+
+import { Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type MessageActionsProps = {
@@ -33,12 +34,6 @@ const MessageActions = ({ content }: MessageActionsProps) => {
         title="Copiar mensagem"
       >
         <Copy className="h-4 w-4" />
-      </button>
-      <button className="p-1 hover:text-white transition-colors">
-        <RotateCcw className="h-4 w-4" />
-      </button>
-      <button className="p-1 hover:text-white transition-colors">
-        <MoreHorizontal className="h-4 w-4" />
       </button>
     </div>
   );
