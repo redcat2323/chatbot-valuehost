@@ -31,6 +31,7 @@ serve(async (req) => {
         model: 'gpt-4o-mini',
         messages: messages,
         max_tokens: 1024,
+        temperature: 0.7,
       }),
     });
 
@@ -41,7 +42,6 @@ serve(async (req) => {
       throw new Error(data.error?.message || 'Error calling OpenAI API');
     }
 
-    // Extract just the text content from the response
     const content = data.choices[0].message.content;
 
     return new Response(

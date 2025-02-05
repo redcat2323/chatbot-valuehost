@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import ChatHeader from '@/components/ChatHeader';
@@ -10,10 +10,40 @@ type Message = {
   content: string;
 };
 
+type CustomInstruction = {
+  id: string;
+  title: string;
+  content: string;
+};
+
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [customInstructions, setCustomInstructions] = useState<CustomInstruction[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    fetchCustomInstructions();
+  }, []);
+
+  const fetchCustomInstructions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('custom_instructions')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setCustomInstructions(data || []);
+    } catch (error: any) {
+      console.error('Error fetching custom instructions:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar instruções personalizadas",
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) {
@@ -35,8 +65,18 @@ const Index = () => {
       
       setMessages(newMessages);
 
+      // Prepare system message with custom instructions
+      const systemMessage = customInstructions
+        .map(instruction => instruction.content)
+        .join('\n\n');
+
       const { data, error } = await supabase.functions.invoke('chat', {
-        body: { messages: newMessages }
+        body: { 
+          messages: [
+            { role: 'system', content: systemMessage },
+            ...newMessages
+          ]
+        }
       });
 
       if (error) throw error;
