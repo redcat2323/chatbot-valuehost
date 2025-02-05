@@ -18,17 +18,18 @@ const ChatInput = ({ onSend, isLoading = false }: ChatInputProps) => {
     }
   }, []);
 
+  // Re-focus textarea when loading state changes
+  useEffect(() => {
+    if (!isLoading && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isLoading]);
+
   const handleSubmit = () => {
     if (message.trim() && !isLoading) {
       onSend(message);
       setMessage("");
       setIsExpanded(false);
-      // Re-focus the textarea after submission
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus();
-        }
-      }, 0);
     }
   };
 
