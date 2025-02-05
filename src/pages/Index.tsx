@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import ChatHeader from '@/components/ChatHeader';
 import ChatInput from '@/components/ChatInput';
 import MessageList from '@/components/MessageList';
+import { useQuery } from '@tanstack/react-query';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -19,31 +20,28 @@ type CustomInstruction = {
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [customInstructions, setCustomInstructions] = useState<CustomInstruction[]>([]);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchCustomInstructions();
-  }, []);
+  // Fetch custom instructions using React Query
+  const { data: customInstructions = [] } = useQuery({
+    queryKey: ['customInstructions'],
+    queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.user) return [];
 
-  const fetchCustomInstructions = async () => {
-    try {
       const { data, error } = await supabase
         .from('custom_instructions')
         .select('*')
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
-      setCustomInstructions(data || []);
-    } catch (error: any) {
-      console.error('Error fetching custom instructions:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar instruções personalizadas",
-        variant: "destructive"
-      });
+      if (error) {
+        console.error('Error fetching custom instructions:', error);
+        throw error;
+      }
+      return data || [];
     }
-  };
+  });
 
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) {
@@ -67,8 +65,10 @@ const Index = () => {
 
       // Prepare system message with custom instructions
       const systemMessage = customInstructions
-        .map(instruction => instruction.content)
+        .map(instruction => `${instruction.title}:\n${instruction.content}`)
         .join('\n\n');
+
+      console.log('System message being sent:', systemMessage); // Debug log
 
       const { data, error } = await supabase.functions.invoke('chat', {
         body: { 
