@@ -40,6 +40,8 @@ interface CustomInstruction {
   updated_at: string;
 }
 
+const APP_ID = 'lovable-chat';
+
 const Log = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -150,6 +152,7 @@ const Log = () => {
       const { data, error } = await supabase
         .from("custom_instructions")
         .select("*")
+        .eq('app_id', APP_ID)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -170,7 +173,8 @@ const Log = () => {
         .insert([{ 
           title, 
           content,
-          user_id: session.user.id // Adicionando o user_id
+          user_id: session.user.id,
+          app_id: APP_ID
         }])
         .select()
         .single();
