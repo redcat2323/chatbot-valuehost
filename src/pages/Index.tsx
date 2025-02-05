@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import ChatHeader from '@/components/ChatHeader';
 import ChatInput from '@/components/ChatInput';
 import MessageList from '@/components/MessageList';
 import { useQuery } from '@tanstack/react-query';
+import { Session } from '@supabase/supabase-js';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -26,10 +27,12 @@ const Index = () => {
   const { data: customInstructions = [] } = useQuery({
     queryKey: ['customInstructions'],
     queryFn: async () => {
-      const { data: session } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      
       if (!session?.user) return [];
 
-      const { data, error } = await supabase
+      const { data: instructions, error } = await supabase
         .from('custom_instructions')
         .select('*')
         .eq('user_id', session.user.id)
@@ -39,7 +42,7 @@ const Index = () => {
         console.error('Error fetching custom instructions:', error);
         throw error;
       }
-      return data || [];
+      return instructions || [];
     }
   });
 
