@@ -23,17 +23,28 @@ const ChatInput = ({ onSend, isLoading = false }: ChatInputProps) => {
     }
   };
 
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    // Auto-adjust height
+    e.target.style.height = 'auto';
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`;
+  };
+
   return (
     <div className="relative flex w-full flex-col items-center">
       <div className="relative w-full">
         <textarea
           rows={1}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={handleTextareaChange}
           onKeyDown={handleKeyDown}
           placeholder="Envie uma mensagem para o GPT"
-          className="w-full resize-none rounded-full bg-[#2F2F2F] px-4 py-4 pr-12 focus:outline-none"
-          style={{ maxHeight: "200px" }}
+          className="w-full resize-none rounded-full bg-[#2F2F2F] px-4 py-4 pr-12 focus:outline-none scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
+          style={{
+            minHeight: "56px",
+            maxHeight: "200px",
+            overflowY: "auto"
+          }}
           disabled={isLoading}
         />
         <button 
