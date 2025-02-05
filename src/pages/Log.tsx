@@ -1,12 +1,23 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { UsageChart } from "@/components/dashboard/UsageChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 interface LogStats {
   weeklyCount: number;
@@ -21,10 +32,21 @@ interface ChartData {
   count: number;
 }
 
+interface CustomInstruction {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const Log = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -122,6 +144,87 @@ const Log = () => {
     enabled: isAuthenticated,
   });
 
+  const { data: instructions, isLoading: isLoadingInstructions } = useQuery({
+    queryKey: ["customInstructions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("custom_instructions")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as CustomInstruction[];
+    },
+    enabled: isAuthenticated,
+  });
+
+  const createInstruction = useMutation({
+    mutationFn: async ({ title, content }: { title: string; content: string }) => {
+      const { data, error } = await supabase
+        .from("custom_instructions")
+        .insert([{ title, content }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customInstructions"] });
+      toast({
+        title: "Instrução criada",
+        description: "A instrução personalizada foi criada com sucesso.",
+      });
+      setTitle("");
+      setContent("");
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível criar a instrução. " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteInstruction = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("custom_instructions")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customInstructions"] });
+      toast({
+        title: "Instrução removida",
+        description: "A instrução personalizada foi removida com sucesso.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover a instrução. " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title || !content) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha todos os campos.",
+        variant: "destructive",
+      });
+      return;
+    }
+    createInstruction.mutate({ title, content });
+  };
+
   if (!isAuthenticated) {
     return null;
   }
@@ -169,8 +272,84 @@ const Log = () => {
           title="Histórico de Consultas"
         />
       )}
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Instruções Personalizadas</h2>
+        
+        <form onSubmit={handleSubmit} className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Nova Instrução</CardTitle>
+              <CardDescription>
+                Adicione uma nova instrução personalizada para o ChatGPT
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Título</Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Ex: Instruções para atendimento ao cliente"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="content">Conteúdo</Label>
+                <Textarea
+                  id="content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Digite as instruções detalhadas aqui..."
+                  className="min-h-[150px]"
+                />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                type="submit" 
+                disabled={createInstruction.isPending}
+              >
+                {createInstruction.isPending ? "Salvando..." : "Salvar Instrução"}
+              </Button>
+            </CardFooter>
+          </Card>
+        </form>
+
+        <div className="grid gap-4">
+          {isLoadingInstructions ? (
+            Array(3).fill(0).map((_, i) => (
+              <Skeleton key={i} className="h-[200px] w-full" />
+            ))
+          ) : instructions?.map((instruction) => (
+            <Card key={instruction.id}>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>{instruction.title}</CardTitle>
+                    <CardDescription>
+                      Criado em: {new Date(instruction.created_at).toLocaleDateString()}
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => deleteInstruction.mutate(instruction.id)}
+                    disabled={deleteInstruction.isPending}
+                  >
+                    Remover
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="whitespace-pre-wrap">{instruction.content}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default Log;
