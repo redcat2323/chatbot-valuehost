@@ -4,8 +4,8 @@ const ChatHeader = () => {
       <div className="flex h-[60px] items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <img 
-            src="https://napoleon.com.br/wp-content/uploads/2023/08/Asset-4.svg" 
-            alt="Napoleon Logo" 
+            src="https://chat.valuehost.com.br/logo-dark.svg" 
+            alt="ValueHost Logo" 
             className="h-8"
           />
         </div>
