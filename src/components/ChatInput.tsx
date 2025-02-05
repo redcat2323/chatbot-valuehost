@@ -8,11 +8,13 @@ interface ChatInputProps {
 
 const ChatInput = ({ onSend, isLoading = false }: ChatInputProps) => {
   const [message, setMessage] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleSubmit = () => {
     if (message.trim() && !isLoading) {
       onSend(message);
       setMessage("");
+      setIsExpanded(false);
     }
   };
 
@@ -27,7 +29,9 @@ const ChatInput = ({ onSend, isLoading = false }: ChatInputProps) => {
     setMessage(e.target.value);
     // Auto-adjust height
     e.target.style.height = 'auto';
-    e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`;
+    const newHeight = Math.min(e.target.scrollHeight, 200);
+    e.target.style.height = `${newHeight}px`;
+    setIsExpanded(newHeight >= 200);
   };
 
   return (
@@ -39,7 +43,7 @@ const ChatInput = ({ onSend, isLoading = false }: ChatInputProps) => {
           onChange={handleTextareaChange}
           onKeyDown={handleKeyDown}
           placeholder="Envie uma mensagem para o GPT"
-          className="w-full resize-none rounded-full bg-[#2F2F2F] px-4 py-4 pr-12 focus:outline-none scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent"
+          className={`w-full resize-none bg-[#2F2F2F] px-4 py-4 pr-12 focus:outline-none scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent ${isExpanded ? 'rounded-[5px]' : 'rounded-full'}`}
           style={{
             minHeight: "56px",
             maxHeight: "200px",
