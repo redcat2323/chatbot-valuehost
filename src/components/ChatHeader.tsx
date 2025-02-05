@@ -1,11 +1,11 @@
 const ChatHeader = () => {
   return (
-    <div className="fixed top-0 z-30 w-full border-b border-white/20 bg-white">
+    <div className="fixed top-0 z-30 w-full border-b border-white/20 bg-black backdrop-blur">
       <div className="flex h-[60px] items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <img 
-            src="https://www.valuehost.com.br/assets/svg/logo/logo.svg" 
-            alt="ValueHost Logo" 
+            src="https://napoleon.com.br/wp-content/uploads/2023/08/Asset-4.svg" 
+            alt="Napoleon Logo" 
             className="h-8"
           />
         </div>
