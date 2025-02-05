@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ArrowUp, Loader2 } from "lucide-react";
 
 interface ChatInputProps {
@@ -9,12 +9,26 @@ interface ChatInputProps {
 const ChatInput = ({ onSend, isLoading = false }: ChatInputProps) => {
   const [message, setMessage] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Focus textarea when component mounts
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
 
   const handleSubmit = () => {
     if (message.trim() && !isLoading) {
       onSend(message);
       setMessage("");
       setIsExpanded(false);
+      // Re-focus the textarea after submission
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+        }
+      }, 0);
     }
   };
 
@@ -38,6 +52,7 @@ const ChatInput = ({ onSend, isLoading = false }: ChatInputProps) => {
     <div className="relative flex w-full flex-col items-center">
       <div className="relative w-full">
         <textarea
+          ref={textareaRef}
           rows={1}
           value={message}
           onChange={handleTextareaChange}
