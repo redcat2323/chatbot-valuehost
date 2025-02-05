@@ -1,5 +1,4 @@
 
-import React, { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,9 +8,9 @@ import Index from "./pages/Index";
 import Log from "./pages/Log";
 import Auth from "./pages/Auth";
 
-const App = () => {
-  const [queryClient] = useState(() => new QueryClient());
+const queryClient = new QueryClient();
 
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
