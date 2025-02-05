@@ -160,9 +160,18 @@ const Log = () => {
 
   const createInstruction = useMutation({
     mutationFn: async ({ title, content }: { title: string; content: string }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error("Usuário não autenticado");
+      }
+
       const { data, error } = await supabase
         .from("custom_instructions")
-        .insert([{ title, content }])
+        .insert([{ 
+          title, 
+          content,
+          user_id: session.user.id // Adicionando o user_id
+        }])
         .select()
         .single();
 
