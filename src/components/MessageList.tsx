@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import Message from './Message';
 
 type Message = {
@@ -11,6 +12,16 @@ type MessageListProps = {
 };
 
 const MessageList = ({ messages, isLoading = false }: MessageListProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="w-full max-w-3xl mx-auto px-4">
@@ -28,6 +39,7 @@ const MessageList = ({ messages, isLoading = false }: MessageListProps) => {
             isLoading={true}
           />
         )}
+        <div ref={messagesEndRef} />
       </div>
     </div>
   );
