@@ -1,5 +1,6 @@
 import MessageAvatar from './MessageAvatar';
 import MessageActions from './MessageActions';
+import CodePreview from './CodePreview';
 
 type MessageProps = {
   role: 'user' | 'assistant';
@@ -9,6 +10,23 @@ type MessageProps = {
 
 const Message = ({ role, content, isLoading = false }: MessageProps) => {
   const formatContent = (text: string) => {
+    // Check if content contains HTML code (basic detection)
+    const hasHtml = text.includes('```html') && text.includes('```');
+    
+    if (hasHtml) {
+      const htmlContent = text.split('```html')[1].split('```')[0].trim();
+      return (
+        <div>
+          <CodePreview code={htmlContent} />
+          {text.split('```').slice(2).join('```').trim() && (
+            <p className="mt-4 whitespace-pre-wrap break-words">
+              {text.split('```').slice(2).join('```').trim()}
+            </p>
+          )}
+        </div>
+      );
+    }
+
     return text
       .replace(/\*\*/g, '')
       .replace(/---/g, '\n')
