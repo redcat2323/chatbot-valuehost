@@ -68,7 +68,6 @@ export default {
     },
   },
   plugins: [
-    require("tailwindcss-animate"),
-    require('tailwind-scrollbar')({ nocompatible: true })
+    require("tailwindcss-animate")
   ],
 } satisfies Config;
