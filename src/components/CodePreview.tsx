@@ -40,11 +40,6 @@ const CodePreview = ({ code }: CodePreviewProps) => {
               scrollBeyondLastLine: false,
               renderLineHighlight: 'none',
               fontFamily: 'monospace',
-              theme: {
-                colors: {
-                  'editor.background': '#1e1e1e',
-                }
-              }
             }}
           />
         </div>
